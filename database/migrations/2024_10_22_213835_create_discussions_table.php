@@ -11,14 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('posts', function (Blueprint $table) {
+        Schema::create('discussions', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-            $table->text('body')->nullable();
-            $table->string('file')->nullable();
-            $table->enum('type', ['normal', 'astuce', 'emergency']);
+            $table->text('message')->nullable(); // Champ pour le texte du message
+            $table->string('file_msg')->nullable();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade'); // Référence à l'utilisateur
             $table->timestamps();
-
         });
     }
 
@@ -27,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('posts');
+        Schema::dropIfExists('discussions');
     }
 };

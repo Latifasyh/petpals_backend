@@ -27,7 +27,8 @@ class PetController extends Controller implements HasMiddleware
      */
     public function index()
     {
-        return Pet::all();
+        return Pet::orderBy('created_at', 'desc')->get();
+        //return Pet::all( );
     }
 
     /**
@@ -36,13 +37,13 @@ class PetController extends Controller implements HasMiddleware
     public function store(Request $request)
     {
         $fields=$request->validate([
-            'name'=>'required|max:225',
-            'birthday_pet'=>'required|date',
+            'name'=>'nullable|max:225',
+            'birthday_pet'=>'nullable|date',
             'family'=>'nullable',
             'breed'=>'nullable',
             'vaccination_agenda'=>'nullable|date',
             'disease'=>'nullable',
-            'pet_picture'=> 'nullable|file|mimes:jpg,png,jpeg'
+            'pet_picture'=> 'nullable|image|mimes:jpg,png,jpeg'
         ]);
 
         if ($request->hasFile('pet_picture')) {
@@ -64,6 +65,7 @@ class PetController extends Controller implements HasMiddleware
     public function show(Pet $pet)
     {
         return $pet;
+
     }
 
     /**
@@ -75,8 +77,8 @@ class PetController extends Controller implements HasMiddleware
 
 
         $fields=$request->validate([
-            'name'=>'required|max:225',
-            'birthday_pet'=>'required|date',
+            'name'=>'nullable|max:225',
+            'birthday_pet'=>'nullable|date',
             'family'=>'nullable',
             'breed'=>'nullable',
             'vaccination_agenda'=>'nullable|date',
@@ -85,8 +87,9 @@ class PetController extends Controller implements HasMiddleware
         ]);
 
         if ($request->hasFile('pet_picture')) {
-            if ($pet->file) {
-                Storage::disk('public')->delete($pet->file);
+            // Supprimer l'ancienne photo si elle existe
+            if ($pet->pet_picture) { // Assurez-vous que c'est la bonne propriété
+                Storage::disk('public')->delete($pet->pet_picture);
             }
 
             // Stockage du nouveau fichier

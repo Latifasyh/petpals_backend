@@ -12,6 +12,7 @@ class SheltterGroomer extends Model
     protected $fillable = [
         'user_id',
         'seller_id'
+
     ];
 
 
@@ -28,6 +29,16 @@ class SheltterGroomer extends Model
     public function products()
     {
         return $this->hasMany(Product::class, 'seller_id', 'seller_id');
+    }
+
+   /*  public function PicturesBusiness()
+    {
+        return $this->hasMany(PicturesBusiness::class);
+    } */
+
+    public function picturesBusiness() // Utilisation de la convention camelCase
+    {
+        return $this->hasMany(PicturesBusiness::class, 'sheltter_groomers_id'); // Assurez-vous que cela correspond au champ de migration
     }
 
    /*  public function groomingServices()

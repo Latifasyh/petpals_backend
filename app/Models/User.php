@@ -3,9 +3,10 @@
 namespace App\Models;
 use App\Models\Post;
 use App\Models\seller;
-use App\Models\SheltterGroomer;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
+use App\Models\Reaction;
+use App\Models\SheltterGroomer;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -44,6 +45,10 @@ class User extends Authenticatable
         return $this->hasMany(Post::class);
     }
 
+    public function reaction(){
+        return $this->hasMany(Reaction::class);
+    }
+
     public function pets(){
         return $this->hasMany(Pet::class);
     }
@@ -59,6 +64,18 @@ class User extends Authenticatable
         return $this->hasOne(SheltterGroomer::class);
     }
 
+    public function Discussion()
+    {
+        return $this->hasMany(Discussion::class);
+    }
+    public function CoverPic()
+    {
+        return $this->hasMany(CoverPic::class);
+    }
 
+    public function UserPictures()
+{
+    return $this->hasMany(UserPictures::class);
+}
 
 }

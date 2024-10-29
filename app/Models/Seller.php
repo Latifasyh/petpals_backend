@@ -30,5 +30,9 @@ class Seller extends Model
     {
         return $this->hasOne(SheltterGroomer::class);
     }
+    public function PicturesBusiness()
+    {
+        return $this->hasMany(PicturesBusiness::class);
+    }
 
 }

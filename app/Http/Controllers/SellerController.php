@@ -21,9 +21,13 @@ class SellerController extends Controller  implements HasMiddleware
 
   }
 
-    public function index()
+    public function index(Seller $seller)
     {
-        return Seller::all();
+        $account = Auth::user();
+        //return Seller::all();
+        $seller=  Seller::with('user.account')->get();
+        return response()->json($seller);
+
     }
 
     /**

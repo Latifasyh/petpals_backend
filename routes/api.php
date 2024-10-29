@@ -1,5 +1,9 @@
 <?php
 
+use App\Models\Post;
+use App\Models\User;
+use App\Models\CoverPic;
+use App\Models\Discussion;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PetController;
@@ -8,6 +12,10 @@ use App\Http\Controllers\PostController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\SellerController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\CoverPicController;
+use App\Http\Controllers\ReactionController;
+use App\Http\Controllers\DiscussionController;
+use App\Http\Controllers\UserPicturesController;
 use App\Http\Controllers\SheltterGroomerController;
 
 
@@ -24,7 +32,31 @@ Route::middleware('auth:sanctum')->get('/user', [UserController::class, 'index']
 
 
 //crud posts
-Route::apiResource('posts',PostController::class);
+Route::apiResource('posts',PostController::class)->middleware('auth:sanctum');
+Route::post('/posts/{post}', [PostController::class, 'update']);
+
+// routes/api.php
+//Route::patch('/posts/{post}', [PostController::class, 'update'])->middleware('auth:sanctum');
+
+
+
+//Route::middleware('auth:sanctum')->get('/posts/{type}', [PostController::class, 'getPostsByType']);
+
+
+
+/* Route::middleware('auth:sanctum')->group(function () {
+Route::post('/posts/{post}/reactions', [ReactionController::class, 'addReaction']);
+Route::delete('/posts/{post}/reactions', [ReactionController::class, 'removeReaction']);
+}); */
+
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::post('/posts/{postId}/reactions', [ReactionController::class, 'store'])->name('reactions.store');
+    Route::put('/reactions/{reactionId}', [ReactionController::class, 'update'])->name('reactions.update');
+    Route::delete('/reactions/{reactionId}', [ReactionController::class, 'destroy'])->name('reactions.destroy');
+
+});
+
+//Route::apiResource('/posts/{post}/reactions',ReactionController::class)->middleware('auth:sanctum');
 
 //Auth
 Route::post('/register',[AuthController::class, 'register']);
@@ -35,6 +67,11 @@ Route::post('/logout',[AuthController::class, 'logout'])->middleware('auth:sanct
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+//Route::post('/user/{user}', [UserController::class, 'update'])->middleware('auth:sanctum');
+Route::post('/user/update', [UserController::class, 'update'])->middleware('auth:sanctum');
+
+
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/user', [UserController::class, 'update']);
@@ -48,6 +85,8 @@ Route::apiResource('user',UserController::class);
 
 //crud pets
 Route::apiResource('pets',PetController::class)->middleware('auth:sanctum');
+Route::post('/pets/{pet}', [PetController::class, 'update'])->middleware('auth:sanctum');
+
 
 //crud seller
 Route::apiResource('sellers',SellerController::class)->middleware('auth:sanctum');
@@ -60,3 +99,18 @@ Route::middleware('auth:sanctum')->group(function () {
 
 //crud SheltterGroomer
 Route::apiResource('shelttergroomers',SheltterGroomerController::class)->middleware('auth:sanctum');
+
+//discussion
+Route::apiResource('discussion',DiscussionController::class)->middleware('auth:sanctum');
+Route::post('/discussion/{discussion}', [DiscussionController::class, 'update'])->middleware('auth:sanctum');
+
+//coverPic
+Route::apiResource('coverPic',CoverPicController::class)->middleware('auth:sanctum');
+
+
+//picuser
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('users/photos', [UserPicturesController::class, 'uploadPhotos']);
+    Route::get('users/photos', [UserPicturesController::class, 'getPhotos']);
+    Route::delete('users/photos/{userPhoto}', [UserPicturesController::class, 'destroy']);
+});

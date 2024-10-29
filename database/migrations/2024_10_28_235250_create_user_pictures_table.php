@@ -11,14 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('posts', function (Blueprint $table) {
+        Schema::create('user_pictures', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-            $table->text('body')->nullable();
-            $table->string('file')->nullable();
-            $table->enum('type', ['normal', 'astuce', 'emergency']);
+            $table->foreignId('user_id')->constrained()->onDelete('cascade'); // Lien avec l'utilisateur
+            $table->string('path'); // Chemin de la photo
             $table->timestamps();
-
         });
     }
 
@@ -27,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('posts');
+        Schema::dropIfExists('user_pictures');
     }
 };
