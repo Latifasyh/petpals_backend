@@ -64,6 +64,11 @@ class User extends Authenticatable
         return $this->hasOne(SheltterGroomer::class);
     }
 
+    public function Veto()
+    {
+        return $this->hasOne(Veto::class);
+    }
+
     public function Discussion()
     {
         return $this->hasMany(Discussion::class);

@@ -10,24 +10,14 @@ class PicturesBusiness extends Model
     use HasFactory;
 
     protected $fillable = [
-        'seller_id',
-        'sheltter_groomers_id',
-        //'veterinarian_id',
-        'path',
+        'entity_id',   // ID de l'entité (seller, sheltterGroomer ou veto)
+        'entity_type', // Type d'entité (par exemple: Seller, SheltterGroomer, Veto)
+        'path',        // Chemin de la photo
     ];
 
-    public function seller()
+    // Définir la relation polymorphe
+    public function entity()
     {
-        return $this->belongsTo(Seller::class);
+        return $this->morphTo(); // Utilise morphTo pour récupérer le modèle lié
     }
-
-    public function sheltterGroomer()
-    {
-        return $this->belongsTo(SheltterGroomer::class);
-    }
-
-    /* public function veterinarian()
-    {
-        return $this->belongsTo(Veterinarian::class);
-    } */
 }

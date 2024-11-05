@@ -2,14 +2,17 @@
 
 use App\Models\Post;
 use App\Models\User;
+use App\Models\veto;
 use App\Models\CoverPic;
 use App\Models\Discussion;
 use Illuminate\Http\Request;
+use App\Models\PicturesBusiness;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PetController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\VetoController;
 use App\Http\Controllers\SellerController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CoverPicController;
@@ -17,7 +20,7 @@ use App\Http\Controllers\ReactionController;
 use App\Http\Controllers\DiscussionController;
 use App\Http\Controllers\UserPicturesController;
 use App\Http\Controllers\SheltterGroomerController;
-
+use App\Http\Controllers\PicturesBusinessController;
 
  Route::get('/user', function (Request $request) {
     return $request->user();
@@ -90,6 +93,8 @@ Route::post('/pets/{pet}', [PetController::class, 'update'])->middleware('auth:s
 
 //crud seller
 Route::apiResource('sellers',SellerController::class)->middleware('auth:sanctum');
+Route::put('/sellers/{seller}', [SellerController::class, 'update']);
+
 //crud product
 Route::apiResource('products',ProductController::class)->middleware('auth:sanctum');
 
@@ -100,6 +105,9 @@ Route::middleware('auth:sanctum')->group(function () {
 //crud SheltterGroomer
 Route::apiResource('shelttergroomers',SheltterGroomerController::class)->middleware('auth:sanctum');
 
+//crud Veto
+Route::apiResource('veto',VetoController::class)->middleware('auth:sanctum');
+
 //discussion
 Route::apiResource('discussion',DiscussionController::class)->middleware('auth:sanctum');
 Route::post('/discussion/{discussion}', [DiscussionController::class, 'update'])->middleware('auth:sanctum');
@@ -108,9 +116,23 @@ Route::post('/discussion/{discussion}', [DiscussionController::class, 'update'])
 Route::apiResource('coverPic',CoverPicController::class)->middleware('auth:sanctum');
 
 
-//picuser
+//picture user folder
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('users/photos', [UserPicturesController::class, 'uploadPhotos']);
     Route::get('users/photos', [UserPicturesController::class, 'getPhotos']);
     Route::delete('users/photos/{userPhoto}', [UserPicturesController::class, 'destroy']);
+});
+
+
+Route::prefix('sellers')->group(function () {
+    Route::post('{sellerId}/pictures', [PicturesBusinessController::class, 'addPictures']);
+    Route::get('{sellerId}/pictures', [PicturesBusinessController::class, 'getPictures']);
+    Route::delete('pictures/{pictureId}', [PicturesBusinessController::class, 'deletePicture']);
+});
+
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/pictures/{entityId}/{entityType}', [PicturesBusinessController::class, 'getPictures']);
+    Route::post('/pictures/{entityId}/{entityType}', [PicturesBusinessController::class, 'addPictures']);
+    Route::delete('/pictures/{pictureId}', [PicturesBusinessController::class, 'deletePicture']);
 });

@@ -13,10 +13,9 @@ return new class extends Migration
     {
         Schema::create('pictures_businesses', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('seller_id')->nullable()->constrained()->onDelete('cascade'); // Lien avec le vendeur
-            $table->foreignId('sheltter_groomers_id')->nullable()->constrained()->onDelete('cascade'); // Lien avec le refuge
+            $table->unsignedBigInteger('entity_id'); // ID de l'entité
+            $table->string('entity_type'); // Type d'entité (Seller, SheltterGroomer, ou Veto)
             $table->string('path'); // Chemin de la photo
-           // $table->foreignId('veterinarian_id')->nullable()->constrained()->onDelete('cascade'); // Lien avec le vétérinaire
             $table->timestamps();
         });
     }
