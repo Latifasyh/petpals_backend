@@ -66,10 +66,20 @@ class SheltterGroomerController extends Controller
      * @param  \App\Models\SheltterGroomer  $shelterGroomer
      * @return \Illuminate\Http\JsonResponse
      */
-    public function show(SheltterGroomer $shelterGroomer)
+    public function show( $id)
     {
-        return response()->json($shelterGroomer->load('seller')); // Charge le seller associé
+        // Récupère le SheltterGroomer avec l'id spécifié et charge la relation seller
+        $sheltterGroomer = SheltterGroomer::with('seller')->findOrFail($id);
+
+        // Si le seller est null, cela signifie qu'il n'y a pas de seller associé à ce SheltterGroomer
+        if (!$sheltterGroomer->seller) {
+            return response()->json(['error' => 'Seller not associated with this SheltterGroomer'], 404);
+        }
+
+        // Retourner le SheltterGroomer avec les informations de seller
+        return response()->json($sheltterGroomer);
     }
+
 
     /**
      * Update the specified Seller and SheltterGroomer in storage.
@@ -78,43 +88,39 @@ class SheltterGroomerController extends Controller
      * @param  \App\Models\SheltterGroomer  $shelterGroomer
      * @return \Illuminate\Http\JsonResponse
      */
+    public function update(Request $request, SheltterGroomer $sheltterGroomer)
+    {
+        // Récupérer le Seller associé au ShelterGroomer via la relation seller
+        $seller = $sheltterGroomer->seller;
 
-     public function update(SheltterGroomer $shelterGroomer, Request $request)
-     {
-         // Authentification de l'utilisateur
-         $account = Auth::user();
+        // Vérifier si le Seller existe
+        if (!$seller) {
+            return response()->json(['error' => 'Seller not found.'], 404);
+        }
 
-         // Vérifiez si l'utilisateur a un vendeur associé
-         $seller = $account->seller; // Récupérez le seller associé à l'utilisateur
+        // Validation des données envoyées pour mettre à jour les informations du Seller
+        $validatedData = $request->validate([
+            'business_name' => 'sometimes|string|max:255',
+            'address' => 'sometimes|string|max:255',
+            'number_phone_pro' => 'sometimes|string|max:20',
+            'city' => 'sometimes|string|max:255',
+        ]);
 
-         // Vérifiez si le seller est bien associé à ce shelterGroomer
-         if ($shelterGroomer->seller_id !== $seller->id) {
-             return response()->json(['error' => 'No associated Seller found for this SheltterGroomer.'], 404);
-         }
+        // Mettre à jour les informations du Seller
+        $seller->update([
+            'business_name' => $validatedData['business_name'] ?? $seller->business_name,
+            'address' => $validatedData['address'] ?? $seller->address,
+            'number_phone_pro' => $validatedData['number_phone_pro'] ?? $seller->number_phone_pro,
+            'city' => $validatedData['city'] ?? $seller->city,
+        ]);
 
-         // Validation des données entrantes
-         $validatedData = $request->validate([
-             'business_name' => 'sometimes|string|max:255',
-             'address' => 'sometimes|string|max:255',
-             'number_phone_pro' => 'sometimes|string|max:20',
-             'city' => 'sometimes|string|max:255',
-         ]);
-
-         // Mise à jour des informations du seller
-         $seller->update(array_filter([
-             'business_name' => $validatedData['business_name'] ?? $seller->business_name,
-             'address' => $validatedData['address'] ?? $seller->address,
-             'number_phone_pro' => $validatedData['number_phone_pro'] ?? $seller->number_phone_pro,
-             'city' => $validatedData['city'] ?? $seller->city,
-         ]));
-
-         // Retourne le response avec les informations mises à jour
-         return response()->json([
-             'message' => 'SheltterGroomer updated successfully.',
-             'shelter_groomer' => $shelterGroomer->load('seller'),
-         ]);
-     }
-
+        // Retourner la réponse avec les informations mises à jour
+        return response()->json([
+            'message' => 'Seller updated successfully.',
+            'sheltergroomer' => $sheltterGroomer->load('seller'),  // Charger le seller mis à jour
+            'seller' => $seller,  // Retourner le seller mis à jour
+        ]);
+    }
 
     /**
      * Remove the specified shelter groomer from storage.

@@ -21,9 +21,13 @@ class SheltterGroomer extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function seller()
+    /* public function seller()
     {
         return $this->belongsTo(Seller::class);
+    } */
+    public function seller()
+    {
+        return $this->belongsTo(Seller::class, 'seller_id');
     }
 
 
@@ -48,7 +52,7 @@ class SheltterGroomer extends Model
         return $this->seller ? $this->seller->city : null;
     }
 
-    
+
 
     public function products()
     {

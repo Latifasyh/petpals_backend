@@ -27,6 +27,7 @@ class SellerController extends Controller  implements HasMiddleware
         //return Seller::all();
         $seller=  Seller::with('user.account')->get();
         return response()->json($seller);
+        
 
     }
 

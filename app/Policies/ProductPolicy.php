@@ -12,10 +12,14 @@ class ProductPolicy
 
     public function modify(Account $account, Product $product)
     {
-    // Votre logique pour vérifier si l'Account peut modifier le post
-        return $account->id === $product->seller_id
-        ? Response::allow()
-        : Response::deny('you do not own this post');
-        ;
+    // Vérifiez si l'utilisateur associé à l'Account a le même ProfessionType que le produit
+        $user = $account->user; // Récupérer l'utilisateur associé à l'Account
+        $professionTypeId = $user->professionType->id; // Récupérer l'ID du ProfessionType de l'utilisateur
+
+        // Vérifiez si l'ID du ProfessionType de l'utilisateur correspond à celui du produit
+        return $product->profession_type_id === $professionTypeId
+            ? Response::allow()
+            : Response::deny('You do not own this product');
+            ;
     }
 }

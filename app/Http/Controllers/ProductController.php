@@ -27,7 +27,9 @@ class ProductController extends Controller implements HasMiddleware
      */
     public function index()
     {
-        return Product::all();
+        $products = Product::with('professionType')->get();
+
+        return response()->json($products);
     }
 
     /**
@@ -36,15 +38,20 @@ class ProductController extends Controller implements HasMiddleware
     public function store(Request $request)
     {
 
+        $fields = $request->validate([
+                    'product_name' => 'required|string|max:255',
+                    'category' => 'required|string|max:225',
+                    'price' => 'required|numeric',
+                    'description' => 'required|string',
+                    'picture' => 'nullable|file|mimes:jpg,png,jpeg,gif,mp4,mov,avi',
+                    'animal_type' => 'required|string|max:255',
 
-            // Validate request
-            $request->validate([
-                'name' => 'required|string|max:255',
-                'category' => 'required|string|max:225',
-                'price' => 'required|numeric',
-                'description' => 'required|string',
-                'picture' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            ]);
+                ]);
+
+                if ($request->hasFile('picture')) {
+                    $fields['picture'] = $request->file('picture')->store('Product_Pic', 'public');
+                }
+
 
             // Check if user is authenticated
             $user = Auth::user();
@@ -52,22 +59,19 @@ class ProductController extends Controller implements HasMiddleware
                 return response()->json(['error' => 'User not authenticated'], 401);
             }
 
-            // Ensure the seller exists for this user
-            $seller = Seller::where('user_id', $user->id)->first();
+            $account = Auth::user();
+            $user = $account->user;
 
-            if (!$seller) {
-                return response()->json(['error' => 'Seller not found'], 404);
+            // Vérifiez si l'utilisateur a un professionType
+            if (!$user->professionType) {
+                return response()->json(['message' => 'User  does not have a profession type.'], 400);
             }
 
-            // Handle picture upload
-            $fields = $request->only(['name', 'category', 'price', 'description']);
+            // Utilisez le professionType pour créer le produit
+            $professionType = $user->professionType;
 
-            if ($request->hasFile('picture')) {
-                $fields['picture'] = $request->file('picture')->store('Product_picture', 'public');
-            }
-
-            // Create product
-            $product = $seller->products()->create($fields);
+            // Créez le produit en utilisant la relation avec professionType
+            $product = $professionType->products()->create($fields);
 
             return response()->json($product, 201);
 
@@ -79,7 +83,14 @@ class ProductController extends Controller implements HasMiddleware
      */
     public function show(Product $product)
     {
-        return $product;
+        // Récupère un produit spécifique par son ID
+        $product = Product::with('professionType')->find($product);
+
+        if (!$product) {
+            return response()->json(['error' => 'Product not found'], 404);
+        }
+
+        return response()->json($product);
     }
 
     /**
@@ -87,54 +98,35 @@ class ProductController extends Controller implements HasMiddleware
      */
     public function update(Request $request, Product $product)
     {
+        Gate::authorize('modify', $product);
 
-             Gate::authorize('modify',$product);
+           //  Gate::authorize('modify',$product);
 
-                // Validate request
-                $request->validate([
-                    'name' => 'required|string|max:255',
-                    'category' => 'required|string|max:225',
-                    'price' => 'required|numeric',
-                    'description' => 'required|string',
-                    'picture' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-                ]);
+              // Valider les champs
+        $fields = $request->validate([
+            'product_name' => 'required|string|max:255',
+            'category' => 'required|string|max:255',
+            'animal_type' => 'required|string|max:255',
+            'description' => 'required|string',
+            'picture' => 'nullable|image|mimes:jpg,png,jpeg',
+            'price' => 'required|numeric|min:0',
+        ]);
 
-                // Check if user is authenticated
-                $user = Auth::user();
-                if (!$user) {
-                    return response()->json(['error' => 'User not authenticated'], 401);
-                }
+        // Vérifiez si un fichier a été téléchargé
+        if ($request->hasFile('picture')) {
+            // Supprimez l'ancien fichier si nécessaire
+            if ($product->picture) {
+                $oldImagePath = 'Product_Pic/' . basename($product->picture); // Récupère le nom de fichier
+                Storage::disk('public')->delete($oldImagePath);
+            }
+            // Stockez le nouveau fichier
+            $fields['picture'] = $request->file('picture')->store('Product_Pic', 'public');
+        }
 
-                // Ensure the seller exists for this user
-                $seller = Seller::where('user_id', $user->id)->first();
-                if (!$seller) {
-                    return response()->json(['error' => 'Seller not found'], 404);
-                }
+        // Mettez à jour le produit
+        $product->update($fields);
 
-                // Ensure the product belongs to the authenticated seller
-                if ($product->seller_id !== $seller->id) {
-                    return response()->json(['error' => 'Unauthorized to update this product'], 403);
-                }
-
-                // Handle picture upload
-                $fields = $request->only(['name', 'category', 'price', 'description']);
-
-                if ($request->hasFile('picture')) {
-                    // Optionally delete the old file if necessary
-                    if ($product->picture) {
-                        Storage::disk('public')->delete($product->picture);
-                    }
-
-                    // Store the new file
-                    $fields['picture'] = $request->file('picture')->store('Product_picture', 'public');
-                }
-
-                // Update the product
-                $product->update($fields);
-
-                return response()->json($product, 200);
-
-
+        return response()->json($product, 200);
     }
 
     /**
@@ -142,12 +134,16 @@ class ProductController extends Controller implements HasMiddleware
      */
     public function destroy(Product $product)
     {
-        Gate::authorize('modify',$product);
-        if ($product->file) {
-            Storage::disk('public')->delete($product->file);
-        }
+        Gate::authorize('modify', $product);
+       // Vérifiez si le produit a une image associée
+    if ($product->picture) {
+        // Supprimez l'image du stockage
+        Storage::disk('public')->delete($product->picture); // Assurez-vous que le chemin est correct
+    }
 
-        $product->delete();
-        return ['message'=>'post was deleted'];
+    // Supprimez le produit de la base de données
+    $product->delete();
+
+    return response()->json(['message' => 'Product was deleted'], 200);
     }
 }
