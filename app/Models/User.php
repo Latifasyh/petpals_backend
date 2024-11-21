@@ -53,6 +53,10 @@ class User extends Authenticatable
         return $this->hasMany(Pet::class);
     }
 
+    public function professionType()
+    {
+        return $this->hasOne(ProfessionTypes::class); // Un utilisateur a un type de profession
+    }
 
     public function seller()
     {
@@ -64,13 +68,18 @@ class User extends Authenticatable
         return $this->hasOne(SheltterGroomer::class);
     }
 
+    public function Veto()
+    {
+        return $this->hasOne(Veto::class);
+    }
+
     public function Discussion()
     {
         return $this->hasMany(Discussion::class);
     }
     public function CoverPic()
     {
-        return $this->hasMany(CoverPic::class);
+        return $this->hasOne(CoverPic::class);
     }
 
     public function UserPictures()

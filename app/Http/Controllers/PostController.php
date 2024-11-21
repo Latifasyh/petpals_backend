@@ -205,7 +205,7 @@ public function index(Request $request)
             'file' => 'nullable|file|mimes:jpg,png,jpeg,gif,mp4,mov,avi',
             'type' => 'required|string|in:normal,astuce,emergency',
         ]);
-
+ 
         // Gestion du fichier uploadé
         if ($request->hasFile('file')) {
             // Supprimer l'ancien fichier s'il existe

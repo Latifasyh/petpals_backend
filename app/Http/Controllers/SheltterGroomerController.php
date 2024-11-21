@@ -5,210 +5,138 @@ namespace App\Http\Controllers;
 use App\Models\Seller;
 use Illuminate\Http\Request;
 use App\Models\SheltterGroomer;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Gate;
-
 
 class SheltterGroomerController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Store a newly created Seller and SheltterGroomer in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function store(SheltterGroomer $shelterGroomer,Request $request)
+    {
+        // Valider les données entrantes
+        $validatedData = $request->validate([
+            'business_name' => 'required|string|max:255',
+            'address' => 'required|string|max:255',
+            'number_phone_pro' => 'required|string|max:20',
+            'city' => 'required|string|max:255',
+            'user_id' => 'required|exists:users,id' // Assurez-vous que l'utilisateur existe
+        ]);
+
+        // Créer un Seller
+        $seller = Seller::create([
+            'business_name' => $validatedData['business_name'],
+            'address' => $validatedData['address'],
+            'number_phone_pro' => $validatedData['number_phone_pro'],
+            'city' => $validatedData['city'],
+            'user_id' => $validatedData['user_id'],
+        ]);
+
+        // Créer un SheltterGroomer en utilisant l'ID du Seller
+        $shelterGroomer = SheltterGroomer::create([
+            'user_id' => $validatedData['user_id'],
+            'seller_id' => $seller->id,
+        ]);
+
+        return response()->json([
+            'message' => 'SheltterGroomer created successfully.',
+            'sheltergroomer' => $shelterGroomer,
+            'seller' => $seller
+        ], 201);
+    }
+
+    /**
+     * Display a listing of the shelter groomers.
+     *
+     * @return \Illuminate\Http\JsonResponse
      */
     public function index()
     {
-        //return SheltterGroomer::all();
-        // Récupérer tous les SheltterGroomer
-        $sheltterGroomers = SheltterGroomer::with('seller')->get();
-
-        // Retourner les SheltterGroomers en réponse JSON
-        return response()->json($sheltterGroomers, 200);
-
+        $shelters = SheltterGroomer::with('seller')->get(); // Récupère tous les groomers avec leurs sellers
+        return response()->json($shelters);
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Display the specified shelter groomer.
+     *
+     * @param  \App\Models\SheltterGroomer  $shelterGroomer
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function store(Request $request)
+    public function show( $id)
     {
-        $request->validate([
-            'business_name' => 'required|string|max:255',
-            'address' => 'required|string|max:255',
-        ]);
+        // Récupère le SheltterGroomer avec l'id spécifié et charge la relation seller
+        $sheltterGroomer = SheltterGroomer::with('seller')->findOrFail($id);
 
-        $user = Auth::user();
-        if (!$user) {
-            return response()->json(['error' => 'User not authenticated'], 401);
+        // Si le seller est null, cela signifie qu'il n'y a pas de seller associé à ce SheltterGroomer
+        if (!$sheltterGroomer->seller) {
+            return response()->json(['error' => 'Seller not associated with this SheltterGroomer'], 404);
         }
 
-        // Create Seller entry
-        $seller = Seller::create([
-            'user_id' => $user->id,
-            'business_name' => $request->business_name,
-            'address' => $request->address,
-        ]);
-
-        // Create ShelterGroomer entry
-        $sheltterGroomer = SheltterGroomer::create([
-            'user_id' => $user->id,
-            'seller_id' => $seller->id,
-        ]);
-        return response()->json($sheltterGroomer, 201);
-
-       /*  return response()->json([
-            'sheltterGroomer' => $sheltterGroomer,
-            'user' => $sheltterGroomer->user,
-            'seller' => $sheltterGroomer->seller,
-        ], 201); */
-
-
+        // Retourner le SheltterGroomer avec les informations de seller
+        return response()->json($sheltterGroomer);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(SheltterGroomer $sheltterGroomer)
-    {
-
-           // Charger les relations User et Seller avec les colonnes spécifiées
-            $sheltterGroomer = SheltterGroomer::with(['user:id,first_name,last_name,ville', 'seller:id,business_name,address'])->get();
-
-            // Retourner les données avec seulement les attributs souhaités
-            $result = $sheltterGroomer->map(function($sheltterGroomer) {
-                return [
-                    'id' => $sheltterGroomer->id,
-                    'user' => [
-                        'first_name' => $sheltterGroomer->user->first_name,  // Utilisation correcte des attributs
-                        'last_name' => $sheltterGroomer->user->last_name,
-                        'ville' => $sheltterGroomer->user->ville,
-                    ],
-                    'seller' => [
-                        'business_name' => $sheltterGroomer->seller->business_name,
-                        'address' => $sheltterGroomer->seller->address,  // Utilisation correcte des attributs
-                    ],
-                ];
-            });
-
-            return response()->json($result, 200);
-
-
-
-
-
-                // Charger toutes les données de SheltterGroomer avec les relations 'user' et 'seller'
-            //$sheltterGroomers = SheltterGroomer::with(['user', 'seller'])->get();
-
-            // Retourner les données avec toutes les informations des relations
-           // return response()->json($sheltterGroomers, 200);
-
-
-
-           /*      // Trouver le ShelterGroomer avec ses relations 'user' et 'seller'
-            $sheltterGroomer = SheltterGroomer::with(['user', 'seller'])->find($sheltterGroomer);
-
-            if (!$sheltterGroomer) {
-                return response()->json(['message' => 'SheltterGroomer not found'], 404);
-            }
-
-            // Retourner toutes les informations de ShelterGroomer, User et Seller
-            return response()->json([
-                'sheltterGroomer' => $sheltterGroomer,
-                'user' => $sheltterGroomer->user,
-                'seller' => $sheltterGroomer->seller,
-            ], 200);
- */
-
-
-    }
 
     /**
-     * Update the specified resource in storage.
+     * Update the specified Seller and SheltterGroomer in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\SheltterGroomer  $shelterGroomer
+     * @return \Illuminate\Http\JsonResponse
      */
     public function update(Request $request, SheltterGroomer $sheltterGroomer)
     {
-        Gate::authorize('modify',$sheltterGroomer);
+        // Récupérer le Seller associé au ShelterGroomer via la relation seller
+        $seller = $sheltterGroomer->seller;
 
-                    // Validation des données entrantes pour business_name et address
-            $validated = $request->validate([
-                'business_name' => 'required|string|max:255',
-                'address' => 'required|string|max:255',
-            ]);
+        // Vérifier si le Seller existe
+        if (!$seller) {
+            return response()->json(['error' => 'Seller not found.'], 404);
+        }
 
-            // Trouver l'utilisateur connecté
-            $user = Auth::user();
-            if (!$user) {
-                return response()->json(['error' => 'User not authenticated'], 401);
-            }
+        // Validation des données envoyées pour mettre à jour les informations du Seller
+        $validatedData = $request->validate([
+            'business_name' => 'sometimes|string|max:255',
+            'address' => 'sometimes|string|max:255',
+            'number_phone_pro' => 'sometimes|string|max:20',
+            'city' => 'sometimes|string|max:255',
+        ]);
 
-            // Trouver le SheltterGroomer associé à l'utilisateur
-            $sheltterGroomer = SheltterGroomer::where('user_id', $user->id)->first();
-            if (!$sheltterGroomer) {
-                return response()->json(['error' => 'SheltterGroomer not found'], 404);
-            }
+        // Mettre à jour les informations du Seller
+        $seller->update([
+            'business_name' => $validatedData['business_name'] ?? $seller->business_name,
+            'address' => $validatedData['address'] ?? $seller->address,
+            'number_phone_pro' => $validatedData['number_phone_pro'] ?? $seller->number_phone_pro,
+            'city' => $validatedData['city'] ?? $seller->city,
+        ]);
 
-            // Trouver le Seller associé
-            $seller = Seller::find($sheltterGroomer->seller_id);
-            if (!$seller) {
-                return response()->json(['error' => 'Seller not found'], 404);
-            }
-
-            // Mise à jour des attributs du Seller
-            $seller->business_name = $validated['business_name'];
-            $seller->address = $validated['address'];
-
-            // Sauvegarde des modifications²
-            $seller->save();
-
-            // Trouver les attributs modifiés
-            $updatedAttributes = $seller->getChanges();
-
-             // Retourner uniquement les attributs modifiés
-            return response()->json($updatedAttributes, 200);
-
-            /* return response()->json([
-                'updated_seller' => $updatedAttributes,
-                'sheltter_groomer' => $sheltterGroomer,
-            ], 200); */
-
-            // Retourner uniquement les attributs modifiés
-          //  return response()->json($updatedAttributes, 200);
-
-            // Retourner le SheltterGroomer mis à jour
-           // return response()->json($sheltterGroomer, 200);
+        // Retourner la réponse avec les informations mises à jour
+        return response()->json([
+            'message' => 'Seller updated successfully.',
+            'sheltergroomer' => $sheltterGroomer->load('seller'),  // Charger le seller mis à jour
+            'seller' => $seller,  // Retourner le seller mis à jour
+        ]);
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove the specified shelter groomer from storage.
+     *
+     * @param  \App\Models\SheltterGroomer  $shelterGroomer
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function destroy(SheltterGroomer $sheltterGroomer)
+    public function destroy(SheltterGroomer $shelterGroomer)
     {
-        Gate::authorize('modify',$sheltterGroomer);
-
-            // Trouver l'utilisateur connecté
-        $user = Auth::user();
-        if (!$user) {
-            return response()->json(['error' => 'User not authenticated'], 401);
+        // Supprimer le Seller associé si nécessaire
+        if ($shelterGroomer->seller) {
+            $shelterGroomer->seller->delete();
         }
 
-        // Trouver le SheltterGroomer associé à l'utilisateur
-        $sheltterGroomer = SheltterGroomer::where('user_id', $user->id)->first();
-        if (!$sheltterGroomer) {
-            return response()->json(['error' => 'SheltterGroomer not found'], 404);
-        }
+        $shelterGroomer->delete();
 
-        // Trouver le Seller associé
-        $seller = Seller::find($sheltterGroomer->seller_id);
-        if (!$seller) {
-            return response()->json(['error' => 'Seller not found'], 404);
-        }
-
-        // Supprimer le SheltterGroomer
-        $sheltterGroomer->delete();
-
-        // Supprimer le Seller associé
-        $seller->delete();
-
-        // Retourner une réponse de succès
-        return response()->json(['message' => 'SheltterGroomer and associated Seller deleted successfully'], 200);
-        }
-
+        return response()->json(['message' => 'SheltterGroomer deleted successfully.']);
+    }
 }

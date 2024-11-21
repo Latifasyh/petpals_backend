@@ -9,7 +9,7 @@ class CoverPic extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['cover_id','cover','Bio', 'user_id'];
+    protected $fillable = ['cover','Bio', 'user_id'];
 
     public function user()
     {

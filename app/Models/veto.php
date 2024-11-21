@@ -5,54 +5,29 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class SheltterGroomer extends Model
+class veto extends Model
 {
     use HasFactory;
-
     protected $fillable = [
         'user_id',
-        'seller_id'
+        'seller_id',
+        'shelttergroomer_id'
 
     ];
-
 
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    /* public function seller()
-    {
-        return $this->belongsTo(Seller::class);
-    } */
     public function seller()
     {
-        return $this->belongsTo(Seller::class, 'seller_id');
+        return $this->belongsTo(Seller::class);
     }
-
-
-    // Accessoires pour les attributs de Seller
-    public function getBusinessNameAttribute()
+    public function shelttergrommer()
     {
-        return $this->seller ? $this->seller->business_name : null;
+        return $this->belongsTo(SheltterGroomer::class);
     }
-
-    public function getAddressAttribute()
-    {
-        return $this->seller ? $this->seller->address : null;
-    }
-
-    public function getNumberPhoneProAttribute()
-    {
-        return $this->seller ? $this->seller->number_phone_pro : null;
-    }
-
-    public function getCityAttribute()
-    {
-        return $this->seller ? $this->seller->city : null;
-    }
-
-
 
     public function products()
     {
@@ -74,4 +49,5 @@ class SheltterGroomer extends Model
         // Suppose you have a GroomingService model
         return $this->hasMany(GroomingService::class, 'shelter_groomer_id', 'id');
     } */
+
 }

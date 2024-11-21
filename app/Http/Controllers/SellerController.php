@@ -27,6 +27,7 @@ class SellerController extends Controller  implements HasMiddleware
         //return Seller::all();
         $seller=  Seller::with('user.account')->get();
         return response()->json($seller);
+        
 
     }
 
@@ -39,7 +40,9 @@ class SellerController extends Controller  implements HasMiddleware
         $user = $account->user;
         $seller = $user->seller()->create([
             'business_name' => $request->input('business_name'),
-            'address' => $request->input('address')
+            'address' => $request->input('address'),
+            'city' =>  $request->input('city'), // Validation de la ville
+            'number_phone_pro' =>  $request->input('number_phone_pro'), // Validation de la ville
 
         ]);
 
@@ -78,19 +81,24 @@ class SellerController extends Controller  implements HasMiddleware
      */
     public function update(Request $request, Seller $seller)
     {
-         Gate::authorize('modify',$seller);
+        // Autoriser uniquement l'utilisateur ayant les droits de modification
+        Gate::authorize('modify', $seller);
 
-
-         $fields=$request->validate([
-        'business_name'=>'required|max:225',
-        'address'=>'required|max:225'
+        // Valider les données d'entrée
+        $fields = $request->validate([
+            'business_name' => 'nullable|max:225',
+            'address' => 'nullable|max:225',
+            'city' => 'nullable|string|max:100',
+            'number_phone_pro' => 'nullable|string|max:100',
         ]);
 
+        // Mettre à jour les informations du vendeur
+        $seller->update($fields); // Utilisez l'instance $seller directement
 
-        $seller-> update($fields);
-        return response()->json($seller, 201);
-
+        // Retourner une réponse JSON avec le vendeur mis à jour
+        return response()->json($seller, 200);
     }
+
 
     /**
      * Remove the specified resource from storage.

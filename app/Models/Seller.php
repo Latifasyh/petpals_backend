@@ -2,9 +2,8 @@
 
 namespace App\Models;
 
-use App\Models\SheltterGroomer;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class Seller extends Model
 {
@@ -13,6 +12,8 @@ class Seller extends Model
     protected $fillable=[
         'business_name',
         'address',
+        'number_phone_pro',
+        'city',
         'user_id'
 
     ];
@@ -30,9 +31,15 @@ class Seller extends Model
     {
         return $this->hasOne(SheltterGroomer::class);
     }
-    public function PicturesBusiness()
+
+    public function Veto()
     {
-        return $this->hasMany(PicturesBusiness::class);
+        return $this->hasOne(Veto::class);
     }
+    public function pictures()
+    {
+        return $this->morphMany(PicturesBusiness::class, 'entity'); // Relation polymorphe
+    }
+
 
 }
