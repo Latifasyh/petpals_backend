@@ -10,14 +10,16 @@ class Service extends Model
     use HasFactory;
     protected $fillable=[
         'name',
+        'picture',
         'category',
         'description',
-        'picture',
         'price',
-        'shelttergroomer_id'
+        'price_type',
+        'profession_type_id', // ID de profession_type
    ];
 
-   public function SeltterGroomer (){
-       return $this->belongsTo(SheltterGroomer::class);
+   public function professionType()
+   {
+       return $this->belongsTo(ProfessionTypes::class);
    }
 }

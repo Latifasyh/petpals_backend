@@ -18,10 +18,10 @@ class Product extends Model
          'profession_type_id'
     ];
 
-    public function seller (){
+ /*    public function seller (){
         return $this->belongsTo(Seller::class);
     }
-
+ */
     public function professionType()
     {
         return $this->belongsTo(ProfessionTypes::class, 'profession_type_id');

@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Routing\Controllers\HasMiddleware;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 
 class ProductController extends Controller implements HasMiddleware
@@ -18,7 +19,7 @@ class ProductController extends Controller implements HasMiddleware
 
 
         return [
-            new  Middleware('auth:sanctum', except:['index','show'])
+            new  Middleware('auth:sanctum', except:['index','show','filter'])
         ];
 
     }
@@ -32,6 +33,7 @@ class ProductController extends Controller implements HasMiddleware
         return response()->json($products);
     }
 
+ 
     /**
      * Store a newly created resource in storage.
      */

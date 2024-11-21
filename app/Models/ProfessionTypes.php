@@ -38,4 +38,9 @@ class ProfessionTypes extends Model
     {
         return $this->hasMany(Product::class, 'profession_type_id');
     }
+
+    public function services()
+    {
+        return $this->hasMany(Service::class, 'profession_type_id');
+    }
 }

@@ -3,6 +3,7 @@
 use App\Models\Post;
 use App\Models\User;
 use App\Models\veto;
+use App\Models\Product;
 use App\Models\CoverPic;
 use App\Models\Discussion;
 use Illuminate\Http\Request;
@@ -15,6 +16,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\VetoController;
 use App\Http\Controllers\SellerController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\CoverPicController;
 use App\Http\Controllers\ReactionController;
 use App\Http\Controllers\DiscussionController;
@@ -55,6 +57,7 @@ Route::delete('/posts/{post}/reactions', [ReactionController::class, 'removeReac
 
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/posts/{postId}/reactions', [ReactionController::class, 'store'])->name('reactions.store');
+    Route::get('/posts/{postId}/reactions', [ReactionController::class, 'index'])->name('reactions.index');
     Route::put('/reactions/{reactionId}', [ReactionController::class, 'update'])->name('reactions.update');
     Route::delete('/reactions/{reactionId}', [ReactionController::class, 'destroy'])->name('reactions.destroy');
 
@@ -93,24 +96,33 @@ Route::post('/pets/{pet}', [PetController::class, 'update'])->middleware('auth:s
 
 
 //crud seller
-Route::apiResource('sellers',SellerController::class)->middleware('auth:sanctum');
-Route::put('/sellers/{seller}', [SellerController::class, 'update']);
+/* Route::apiResource('sellers',SellerController::class)->middleware('auth:sanctum');
+Route::put('/sellers/{seller}', [SellerController::class, 'update']); */
 
 //crud product
 Route::apiResource('products',ProductController::class)->middleware('auth:sanctum');
 //Route::post('/products/{product}', [ProductController::class, 'update']);
 
-
 //update product
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/products/{product}', [ProductController::class, 'update']);
+
 });
 
+//crud services
+Route::apiResource('services',ServiceController::class)->middleware('auth:sanctum');
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/services/{service}', [ServiceController::class, 'update']);
+    Route::get('services/filter/{ville}', [ServiceController::class, 'filterByVille']);
+});
+
+
+
 //crud SheltterGroomer
-Route::apiResource('shelttergroomers',SheltterGroomerController::class)->middleware('auth:sanctum');
+//Route::apiResource('shelttergroomers',SheltterGroomerController::class)->middleware('auth:sanctum');
 
 //crud Veto
-Route::apiResource('veto',VetoController::class)->middleware('auth:sanctum');
+//Route::apiResource('veto',VetoController::class)->middleware('auth:sanctum');
 
 //discussion
 Route::apiResource('discussion',DiscussionController::class)->middleware('auth:sanctum');
@@ -128,11 +140,11 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 
-Route::prefix('sellers')->group(function () {
+/* Route::prefix('sellers')->group(function () {
     Route::post('{sellerId}/pictures', [PicturesBusinessController::class, 'addPictures']);
     Route::get('{sellerId}/pictures', [PicturesBusinessController::class, 'getPictures']);
     Route::delete('pictures/{pictureId}', [PicturesBusinessController::class, 'deletePicture']);
-});
+}); */
 
 
 /* Route::middleware('auth:sanctum')->group(function () {

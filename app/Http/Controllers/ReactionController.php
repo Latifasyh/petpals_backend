@@ -9,6 +9,12 @@ use Illuminate\Support\Facades\Auth;
 
 class ReactionController extends Controller
 {
+    public function index()
+    {
+        $reactions = Reaction::with('Posts')->get();
+       // $services = Service::all();
+        return response()->json($reactions);
+    }
     // Ajouter une réaction au post
     public function store(Request $request, $postId)
     {
