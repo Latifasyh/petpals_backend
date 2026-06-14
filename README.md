@@ -95,11 +95,31 @@ php artisan serve
 
 🔑 API Controllers
 
-ControllerResponsibilityAuthControllerRegister, Login, LogoutUserControllerUser profile managementUserPicturesControllerUser photo uploadsCoverPicControllerCover image managementPetControllerPets profilesDiscussionControllerDiscussions & commentsPostControllerPosts & social feedReactionControllerLikes & reactionsProductControllerMarketplace productsSellerControllerSellers managementServiceControllerPet servicesVetoControllerVeterinariesSheltterGroomerControllerShelters & groomersProfessionTypesControllerBusiness categoriesPicturesBusinessControllerBusiness photo galleriesClaude Fable 5 is currently unavailable.
+Voilà! Copie ça 👇
 
+---
 
+## 🔑 API Controllers
 
+| Controller | Responsibility |
+|---|---|
+| `AuthController` | Register, Login, Logout |
+| `UserController` | User profile management |
+| `UserPicturesController` | User photo uploads |
+| `CoverPicController` | Cover image management |
+| `PetController` | Pets profiles |
+| `DiscussionController` | Discussions & comments |
+| `PostController` | Posts & social feed |
+| `ReactionController` | Likes & reactions |
+| `ProductController` | Marketplace products |
+| `SellerController` | Sellers management |
+| `ServiceController` | Pet services |
+| `VetoController` | Veterinaries |
+| `SheltterGroomerController` | Shelters & groomers |
+| `ProfessionTypesController` | Business categories |
+| `PicturesBusinessController` | Business photo galleries |
 
+---
 
 
 👩‍💻 Developer
