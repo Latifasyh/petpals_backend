@@ -7,21 +7,30 @@ PetPals is a social platform for pet lovers. This repository contains the comple
 🚀 Features
 
 🔐 Complete Authentication — Laravel Sanctum token-based authentication.
+
 👤 User Profiles — Profile management with photo and cover image upload
+
 🐕 Pets Management — Add and manage pets profiles
+
 👥 Social Network — Friend requests, private messaging, notifications
+
 💬 Discussion Feed — Posts, reactions, comments
+
 🏢 Business Directory — Vets, pet stores, shelters, groomers
+
 🛒 Marketplace — Products and sellers management
+
 🗺️ Geolocation — Location-based business discovery
+
 🏥 Veterinaries — Find and contact vets
+
 🏠 Shelters & Groomers — Animal shelters and grooming services
+
 🚨 Emergency Services — Urgent pet care access
+
 📸 Media Management — Photo galleries for users and businesses
 
 
-🛠️ Tech Stack
-Voilà! Copie ça 👇
 
 ---
 
@@ -37,8 +46,7 @@ Voilà! Copie ça 👇
 | **Testing** | PHPUnit |
 
 
-📁 Project Structure
-Voilà! Copie ça 👇
+
 
 ---
 
