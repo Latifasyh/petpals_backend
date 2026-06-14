@@ -93,10 +93,6 @@ php artisan db:seed
 # Start the server
 php artisan serve
 
-🔑 API Controllers
-
-Voilà! Copie ça 👇
-
 ---
 
 ## 🔑 API Controllers
