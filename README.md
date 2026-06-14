@@ -38,35 +38,41 @@ Voilà! Copie ça 👇
 
 
 📁 Project Structure
-petpals_backend/
-├── app/
-│   ├── Http/
-│   │   ├── Controllers/
-│   │   │   ├── AuthController.php
-│   │   │   ├── UserController.php
-│   │   │   ├── UserPicturesController.php
-│   │   │   ├── CoverPicController.php
-│   │   │   ├── PetController.php
-│   │   │   ├── DiscussionController.php
-│   │   │   ├── PostController.php
-│   │   │   ├── ReactionController.php
-│   │   │   ├── ProductController.php
-│   │   │   ├── SellerController.php
-│   │   │   ├── ServiceController.php
-│   │   │   ├── VetoController.php
-│   │   │   ├── SheltterGroomerController.php
-│   │   │   ├── ProfessionTypesController.php
-│   │   │   └── PicturesBusinessController.php
-│   │   └── Middleware/
-│   └── Models/
-├── database/
-│   ├── migrations/
-│   └── seeders/
-├── routes/
-│   └── api.php
-├── tests/
-├── .env.example
-└── composer.json
+Voilà! Copie ça 👇
+
+---
+
+## 📁 Project Structure
+
+    petpals_backend/
+    ├── app/
+    │   ├── Http/
+    │   │   ├── Controllers/
+    │   │   │   ├── AuthController.php
+    │   │   │   ├── UserController.php
+    │   │   │   ├── UserPicturesController.php
+    │   │   │   ├── CoverPicController.php
+    │   │   │   ├── PetController.php
+    │   │   │   ├── DiscussionController.php
+    │   │   │   ├── PostController.php
+    │   │   │   ├── ReactionController.php
+    │   │   │   ├── ProductController.php
+    │   │   │   ├── SellerController.php
+    │   │   │   ├── ServiceController.php
+    │   │   │   ├── VetoController.php
+    │   │   │   ├── SheltterGroomerController.php
+    │   │   │   ├── ProfessionTypesController.php
+    │   │   │   └── PicturesBusinessController.php
+    │   │   └── Middleware/
+    │   └── Models/
+    ├── database/
+    │   ├── migrations/
+    │   └── seeders/
+    ├── routes/
+    │   └── api.php
+    ├── tests/
+    ├── .env.example
+    └── composer.json
 
 ⚙️ Installation & Setup
 Prerequisites
