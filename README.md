@@ -21,7 +21,21 @@ PetPals is a social platform for pet lovers. This repository contains the comple
 
 
 🛠️ Tech Stack
-LayerTechnologyFrameworkLaravel (PHP)AuthenticationLaravel SanctumDatabaseMySQLAPIRESTful APIArchitectureMVCTestingPHPUnit
+Voilà! Copie ça 👇
+
+---
+
+## 🛠️ Tech Stack
+
+| Layer | Technology |
+|---|---|
+| **Framework** | Laravel (PHP) |
+| **Authentication** | Laravel Sanctum |
+| **Database** | MySQL |
+| **API** | RESTful API |
+| **Architecture** | MVC |
+| **Testing** | PHPUnit |
+
 
 📁 Project Structure
 petpals_backend/
