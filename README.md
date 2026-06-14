@@ -101,13 +101,6 @@ composer install
 # Copy environment file
 cp .env.example .env
 
-# Configure your database in .env
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=petpals
-DB_USERNAME=root
-DB_PASSWORD=
 
 # Generate application key
 php artisan key:generate
